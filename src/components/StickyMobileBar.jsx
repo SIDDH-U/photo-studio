@@ -7,13 +7,14 @@ import { WhatsAppIcon } from './SocialIcons';
 export default function StickyMobileBar({
   isVisible,
   isContactInView,
+  isPricingCtaInView = false,
   isModalOpen,
   isMenuOpen,
   onOpenBooking,
   currentCategory = 'Weddings'
 }) {
-  // Only show when hero CTA has scrolled out of view, and hide if contact, modal, or menu is open
-  const shouldShow = isVisible && !isContactInView && !isModalOpen && !isMenuOpen;
+  // Only show when hero CTA has scrolled out of view, and hide if contact, pricing CTA, modal, or menu is open
+  const shouldShow = isVisible && !isContactInView && !isPricingCtaInView && !isModalOpen && !isMenuOpen;
 
   return (
     <AnimatePresence>

@@ -1,40 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { SITE } from '../data/site';
 import { getImageMeta } from '../data/studioData';
 
-function CountUpNumber({ target, suffix = "", inView }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!inView) return;
-    let startTimestamp = null;
-    const duration = 800; // 800ms as required
-
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      // easeOutCubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        setCount(target);
-      }
-    };
-    const animId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animId);
-  }, [inView, target]);
-
-  return <span>{count}{suffix}</span>;
-}
-
 export default function Hero({ onOpenBooking, onNavigate }) {
-  const headlineWords = ["Real", "smiles.", "Beautifully", "kept."];
   const [isHeroInView, setIsHeroInView] = useState(true);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const [isTabVisible, setIsTabVisible] = useState(true);
+  
+  // Cursor light for desktop with lerp
+  const [cursorPos, setCursorPos] = useState({ x: -300, y: -300 });
+  const targetPos = useRef({ x: -300, y: -300 });
+  const currentPos = useRef({ x: -300, y: -300 });
+  const collageRef = useRef(null);
   const heroRef = useRef(null);
 
   const metaHero = getImageMeta('hero-1.webp');
@@ -42,7 +19,7 @@ export default function Hero({ onOpenBooking, onNavigate }) {
   const metaFeet = getImageMeta('baby-feet.webp');
   const metaSunset = getImageMeta('gallery-1.webp');
 
-  // Pause loops when hero is off-screen using IntersectionObserver
+  // Pause all animation loops when hero is off-screen or tab is hidden
   useEffect(() => {
     if (!heroRef.current) return;
     const observer = new IntersectionObserver(
@@ -52,20 +29,48 @@ export default function Hero({ onOpenBooking, onNavigate }) {
       { threshold: 0.1 }
     );
     observer.observe(heroRef.current);
-    return () => observer.disconnect();
+
+    const handleVisibilityChange = () => {
+      setIsTabVisible(document.visibilityState === 'visible');
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
-  // Desktop mouse parallax shift (6-10px depth shift)
+  const shouldAnimate = isHeroInView && isTabVisible;
+
+  // Desktop cursor light with lerp (0.08)
+  useEffect(() => {
+    let animId;
+    const lerp = 0.08;
+
+    const animateCursor = () => {
+      currentPos.current.x += (targetPos.current.x - currentPos.current.x) * lerp;
+      currentPos.current.y += (targetPos.current.y - currentPos.current.y) * lerp;
+      setCursorPos({ x: currentPos.current.x, y: currentPos.current.y });
+      animId = requestAnimationFrame(animateCursor);
+    };
+
+    animId = requestAnimationFrame(animateCursor);
+    return () => cancelAnimationFrame(animId);
+  }, []);
+
   const handleMouseMove = (e) => {
     if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMouseOffset({ x, y });
+    if (!collageRef.current) return;
+    const rect = collageRef.current.getBoundingClientRect();
+    targetPos.current = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
   };
 
   const handleMouseLeave = () => {
-    setMouseOffset({ x: 0, y: 0 });
+    targetPos.current = { x: -400, y: -400 };
   };
 
   const scrollToSection = (id) => {
@@ -77,65 +82,44 @@ export default function Hero({ onOpenBooking, onNavigate }) {
     <section 
       ref={heroRef}
       id="hero"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative w-full min-h-[calc(100svh-56px)] lg:min-h-[min(100svh,820px)] lg:max-h-[820px] flex flex-col justify-center pt-16 sm:pt-20 pb-6 sm:pb-8 bg-warm-white overflow-hidden"
+      className="relative w-full min-h-[calc(100svh-56px)] lg:h-[min(100svh,880px)] lg:max-h-[880px] flex items-center pt-16 sm:pt-20 pb-4 lg:pb-0 bg-warm-white overflow-hidden"
     >
-      {/* Background Soft Yellow Radial Glow */}
-      <div 
-        className="absolute top-1/4 right-0 lg:right-1/4 w-[300px] sm:w-[480px] h-[300px] sm:h-[480px] rounded-full bg-flash-yellow/20 blur-[90px] pointer-events-none -z-0"
-        aria-hidden="true"
-      />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 my-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           
-          {/* LEFT COLUMN: Editorial Headline & Actions (Desktop Left, Mobile Order-2) */}
-          <div className="lg:col-span-6 flex flex-col justify-center order-2 lg:order-1">
+          {/* LEFT COLUMN: Text Column (5/12 on Desktop) */}
+          <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 pt-2 sm:pt-0">
             
-            {/* Tagline eyebrow */}
+            {/* Tagline pill */}
             <div className="hidden sm:inline-flex items-center gap-2 mb-2 sm:mb-3">
               <span className="text-xs uppercase tracking-[0.25em] font-semibold text-[#5A554E]">
                 PHOTOS • PEOPLE • STORIES
               </span>
             </div>
 
-            {/* Headline with word-by-word reveal (~60ms stagger) */}
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl xl:text-[3.8rem] font-bold tracking-tight text-ink leading-[1.08] sm:leading-[1.12]">
-              {headlineWords.map((word, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 0.5, 
-                    delay: 0.1 + i * 0.06, 
-                    ease: [0.22, 1, 0.36, 1] 
-                  }}
-                  className="inline-block mr-2 sm:mr-3"
-                >
-                  {word}
-                </motion.span>
-              ))}
+            {/* Headline on exactly two lines with explicit breaks & no orphan words */}
+            <h1 className="font-serif font-bold tracking-tight text-ink leading-[1.05]">
+              <span 
+                className="block whitespace-nowrap"
+                style={{ fontSize: 'clamp(30px, 9vw, 44px)' }}
+              >
+                Real smiles.
+              </span>
+              <span 
+                className="block whitespace-nowrap"
+                style={{ fontSize: 'clamp(30px, 9vw, 44px)' }}
+              >
+                Beautifully kept.
+              </span>
             </h1>
 
-            {/* Subline darkened to at least 4.5:1 contrast on #F6F1E9 */}
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="mt-2.5 sm:mt-4 text-[#3E3C38] text-sm sm:text-base lg:text-lg max-w-lg leading-relaxed font-normal"
-            >
+            {/* Darkened subline for >= 4.5:1 contrast */}
+            <p className="mt-2.5 sm:mt-4 text-[#3E3C38] text-sm sm:text-base lg:text-lg max-w-md leading-relaxed font-normal">
               {SITE.subline}
-            </motion.p>
+            </p>
 
             {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.55 }}
-              className="mt-4 sm:mt-6 flex flex-wrap items-center gap-3"
-            >
+            <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-3">
               {/* Primary Flash Yellow Button */}
               <button
                 onClick={() => onOpenBooking('Weddings')}
@@ -157,58 +141,73 @@ export default function Hero({ onOpenBooking, onNavigate }) {
                   <ArrowRight size={11} />
                 </div>
               </button>
-            </motion.div>
-
-            {/* Compact Stats Row with 800ms Count-Up */}
-            <div className="mt-5 sm:mt-8 pt-4 border-t border-warm-border/70 grid grid-cols-3 gap-2 sm:gap-6 max-w-md">
-              {SITE.stats.map((stat, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <span className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-ink tracking-tight">
-                    <CountUpNumber target={stat.value} suffix={stat.suffix} inView={isHeroInView} />
-                  </span>
-                  <span className="text-[11px] sm:text-xs text-[#524E47] mt-0.5 leading-tight font-medium">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
             </div>
 
           </div>
 
-          {/* RIGHT COLUMN: Overlapping Tilted Collage (Mobile Top ~40svh, Desktop Right) */}
-          <div className="lg:col-span-6 relative flex items-center justify-center order-1 lg:order-2 py-2 sm:py-4">
-            
-            {/* Collage Container (Scales down gracefully on shorter screens <700px height) */}
-            <div className="relative w-[280px] sm:w-[380px] md:w-[420px] lg:w-[460px] h-[34svh] max-h-[290px] sm:h-[380px] sm:max-h-[380px] lg:h-[430px] select-none scale-90 sm:scale-100 origin-center transition-transform">
+          {/* RIGHT COLUMN: Bigger Photo Collage (7/12 on Desktop, Bleeds off Right Edge) */}
+          <div 
+            ref={collageRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className="lg:col-span-7 relative flex items-center justify-center order-1 lg:order-2 py-1 lg:py-0 lg:-mr-16 xl:-mr-24 overflow-visible select-none"
+          >
+            {/* 1. TRAVELLING LIGHT: Radial Glow (60vmin wide, drifts slowly 16s) */}
+            <div
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vmin] h-[60vmin] rounded-full pointer-events-none -z-0 ${
+                shouldAnimate ? 'animate-glow-drift' : ''
+              }`}
+              style={{
+                background: 'radial-gradient(circle, rgba(255,197,49,0.35) 0%, rgba(255,197,49,0.15) 45%, transparent 70%)'
+              }}
+              aria-hidden="true"
+            />
+
+            {/* 2. TRAVELLING LIGHT: Cursor light spot on desktop with hover */}
+            <div
+              className="hidden lg:block absolute pointer-events-none z-30 w-[260px] h-[260px] rounded-full blur-2xl transition-opacity duration-300"
+              style={{
+                left: `${cursorPos.x - 130}px`,
+                top: `${cursorPos.y - 130}px`,
+                background: 'radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)',
+                opacity: cursorPos.x > -100 ? 1 : 0
+              }}
+              aria-hidden="true"
+            />
+
+            {/* Collage Container:
+                Mobile: w-screen -mx-4 height ~46svh
+                Desktop: height ~78vh (min 560px, max 760px), bleeding right
+            */}
+            <div className="relative w-screen -mx-4 sm:w-[480px] sm:mx-auto lg:w-full lg:mx-0 h-[46svh] min-h-[300px] max-h-[390px] sm:h-[420px] lg:h-[78vh] lg:min-h-[560px] lg:max-h-[760px] overflow-visible">
               
-              {/* 1. Diagonal Film Strip - Starts safely BELOW header, 40s loop */}
+              {/* 3. Diagonal Film Strip: Rotated -12deg, running behind main frame and extending past right edge */}
               <div
-                style={{
-                  transform: `translate3d(${mouseOffset.x * 6}px, ${mouseOffset.y * 6}px, 0)`
-                }}
-                className={`absolute top-4 sm:top-2 -left-6 sm:-left-10 z-0 film-strip py-1 px-3 rounded-sm flex items-center gap-2 shadow-xl origin-center pointer-events-none animate-film-drift transition-transform duration-200 ${
-                  !isHeroInView ? 'paused-animation' : ''
+                className={`absolute top-[18%] sm:top-[22%] -left-8 sm:-left-12 lg:-left-24 z-0 film-strip py-1 px-4 rounded-sm flex items-center gap-3 shadow-xl origin-center pointer-events-none ${
+                  shouldAnimate ? 'animate-film-drift-12' : ''
                 }`}
+                style={{ width: 'clamp(550px, 68vw, 1100px)' }}
               >
-                <div className="w-12 sm:w-16 h-10 sm:h-12 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-w1.webp" alt="film reel frame 1" className="w-full h-full object-cover opacity-75" />
+                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
+                  <img src="/assets/gallery-w1.webp" alt="film reel frame 1" className="w-full h-full object-cover opacity-80" />
                 </div>
-                <div className="w-12 sm:w-16 h-10 sm:h-12 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-w2.webp" alt="film reel frame 2" className="w-full h-full object-cover opacity-75" />
+                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
+                  <img src="/assets/gallery-w2.webp" alt="film reel frame 2" className="w-full h-full object-cover opacity-80" />
                 </div>
-                <div className="w-12 sm:w-16 h-10 sm:h-12 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-p1.webp" alt="film reel frame 3" className="w-full h-full object-cover opacity-75" />
+                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
+                  <img src="/assets/gallery-p1.webp" alt="film reel frame 3" className="w-full h-full object-cover opacity-80" />
+                </div>
+                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
+                  <img src="/assets/gallery-f1.webp" alt="film reel frame 4" className="w-full h-full object-cover opacity-80" />
+                </div>
+                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
+                  <img src="/assets/gallery-w3.webp" alt="film reel frame 5" className="w-full h-full object-cover opacity-80" />
                 </div>
               </div>
 
-              {/* 2. Top-Left Frame: Outdoor Sunset Couple (Depth: 7px) */}
-              <div
-                style={{
-                  transform: `translate3d(${mouseOffset.x * 7}px, ${mouseOffset.y * 7}px, 0)`
-                }}
-                className="absolute top-2 sm:top-3 left-0 sm:left-2 z-10 w-24 sm:w-32 md:w-36 aspect-[4/5] bg-white p-1.5 sm:p-2 rounded-xl shadow-md border border-warm-border/60 animate-float-3 transition-transform duration-200"
-              >
-                <div className="w-full h-full overflow-hidden rounded-lg">
+              {/* 4. Top-Left Frame: Outdoor Sunset Couple (Side frame ~60% of main frame) */}
+              <div className="absolute top-[4%] sm:top-[6%] left-[3%] sm:left-[6%] lg:left-[4%] z-10 w-[34vw] sm:w-[150px] lg:w-[clamp(210px,18vw,330px)] aspect-[4/5] bg-white p-1.5 sm:p-2 lg:p-2.5 rounded-xl sm:rounded-2xl shadow-lg border border-warm-border/60 animate-float-3 overflow-hidden">
+                <div className="relative w-full h-full overflow-hidden rounded-lg sm:rounded-xl">
                   <img
                     src="/assets/gallery-1.webp"
                     alt="Couple enjoying golden sunset"
@@ -216,17 +215,18 @@ export default function Hero({ onOpenBooking, onNavigate }) {
                     height={metaSunset.height}
                     className="w-full h-full object-cover"
                   />
+                  {/* Glint effect */}
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className={`absolute inset-0 w-[60%] h-[150%] -top-[25%] bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-[15deg] ${
+                      shouldAnimate ? 'animate-glint-side1' : ''
+                    }`} />
+                  </div>
                 </div>
               </div>
 
-              {/* 3. Center Main Frame: Joyful Wedding Couple (Depth: 10px) */}
-              <div
-                style={{
-                  transform: `translate3d(${mouseOffset.x * 10}px, ${mouseOffset.y * 10}px, 0)`
-                }}
-                className="absolute top-4 sm:top-6 left-12 sm:left-20 md:left-24 z-20 w-36 sm:w-52 md:w-58 lg:w-64 aspect-[3/4] bg-white p-2 sm:p-3 rounded-2xl shadow-xl border border-warm-border/70 animate-float-1 transition-transform duration-200"
-              >
-                <div className="relative w-full h-full overflow-hidden rounded-xl">
+              {/* 5. Center Main Frame: Joyful Wedding Couple (Width: 62vw mobile, clamp(360px, 29vw, 560px) desktop, 4:5 ratio) */}
+              <div className="absolute top-[8%] sm:top-[10%] left-[22%] sm:left-[26%] lg:left-[24%] z-20 w-[62vw] sm:w-[270px] lg:w-[clamp(360px,29vw,560px)] aspect-[4/5] bg-white p-2 sm:p-3 lg:p-4 rounded-2xl sm:rounded-3xl shadow-2xl border border-warm-border/80 animate-float-1 overflow-hidden">
+                <div className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl">
                   <img
                     src="/assets/hero-1.webp"
                     alt="Joyful wedding couple smiling candidly"
@@ -235,17 +235,54 @@ export default function Hero({ onOpenBooking, onNavigate }) {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+                  
+                  {/* Glint effect (starts first) */}
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className={`absolute inset-0 w-[60%] h-[150%] -top-[25%] bg-gradient-to-r from-transparent via-white/35 to-transparent transform -skew-x-[15deg] ${
+                      shouldAnimate ? 'animate-glint-main' : ''
+                    }`} />
+                  </div>
                 </div>
+
+                {/* 7. Rotating Circular "Book Now" Badge (88px mobile, 120px desktop) overlapping bottom-right corner */}
+                <div
+                  onClick={() => onOpenBooking('Weddings')}
+                  className={`absolute -bottom-3 sm:-bottom-4 -right-3 sm:-right-4 z-40 w-[88px] sm:w-[100px] lg:w-[120px] h-[88px] sm:h-[100px] lg:h-[120px] rounded-full bg-flash-yellow shadow-xl cursor-pointer hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group ${
+                    !shouldAnimate ? 'paused-animation' : ''
+                  }`}
+                  aria-label="Click to book a shoot"
+                  title="Click to book a shoot"
+                >
+                  {/* Rotating Circular Text SVG with textPath */}
+                  <div className={`absolute inset-0 flex items-center justify-center animate-badge-rotate pointer-events-none ${
+                    !shouldAnimate ? 'paused-animation' : ''
+                  }`}>
+                    <svg viewBox="0 0 120 120" className="w-full h-full">
+                      <defs>
+                        <path
+                          id="badgeCirclePath"
+                          d="M 60, 60 m -44, 0 a 44,44 0 1,1 88,0 a 44,44 0 1,1 -88,0"
+                        />
+                      </defs>
+                      <text className="text-[10px] font-bold tracking-[0.24em] fill-ink uppercase">
+                        <textPath href="#badgeCirclePath" startOffset="0%">
+                          BOOK NOW • BOOK NOW • BOOK NOW •
+                        </textPath>
+                      </text>
+                    </svg>
+                  </div>
+
+                  {/* Central Arrow Button */}
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-ink text-flash-yellow flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                    <ArrowUpRight size={18} strokeWidth={2.5} />
+                  </div>
+                </div>
+
               </div>
 
-              {/* 4. Top-Right Frame: Laughing Child (Depth: 8px) */}
-              <div
-                style={{
-                  transform: `translate3d(${mouseOffset.x * 8}px, ${mouseOffset.y * 8}px, 0)`
-                }}
-                className="absolute top-2 sm:top-4 right-1 sm:right-4 md:right-6 z-30 w-24 sm:w-32 aspect-square bg-white p-1.5 sm:p-2 rounded-xl shadow-lg border border-warm-border/60 animate-float-2 transition-transform duration-200"
-              >
-                <div className="w-full h-full overflow-hidden rounded-lg">
+              {/* 6. Top-Right Frame: Laughing Child Portrait (Clearly larger than before: ~60% of main frame) */}
+              <div className="absolute top-[6%] sm:top-[8%] right-[2%] sm:right-[4%] lg:-right-4 z-25 w-[34vw] sm:w-[150px] lg:w-[clamp(210px,18vw,330px)] aspect-square bg-white p-1.5 sm:p-2 lg:p-2.5 rounded-xl sm:rounded-2xl shadow-xl border border-warm-border/60 animate-float-2 overflow-hidden">
+                <div className="relative w-full h-full overflow-hidden rounded-lg sm:rounded-xl">
                   <img
                     src="/assets/laughing-child.webp"
                     alt="Laughing child outdoors with bright smile"
@@ -253,17 +290,18 @@ export default function Hero({ onOpenBooking, onNavigate }) {
                     height={metaChild.height}
                     className="w-full h-full object-cover"
                   />
+                  {/* Glint effect */}
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className={`absolute inset-0 w-[60%] h-[150%] -top-[25%] bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-[15deg] ${
+                      shouldAnimate ? 'animate-glint-side2' : ''
+                    }`} />
+                  </div>
                 </div>
               </div>
 
-              {/* 5. Bottom-Left Frame: Henna Hands with Newborn Feet (Depth: 9px) */}
-              <div
-                style={{
-                  transform: `translate3d(${mouseOffset.x * 9}px, ${mouseOffset.y * 9}px, 0)`
-                }}
-                className="absolute bottom-1 sm:bottom-2 left-4 sm:left-8 md:left-10 z-30 w-24 sm:w-32 aspect-square bg-white p-1.5 sm:p-2 rounded-xl shadow-lg border border-warm-border/60 animate-float-3 transition-transform duration-200"
-              >
-                <div className="w-full h-full overflow-hidden rounded-lg">
+              {/* 8. Bottom-Left Frame: Henna Hands with Newborn Feet (Side frame ~60% of main frame) */}
+              <div className="absolute bottom-[2%] sm:bottom-[4%] left-[6%] sm:left-[10%] lg:left-[8%] z-25 w-[32vw] sm:w-[140px] lg:w-[clamp(190px,16vw,300px)] aspect-square bg-white p-1.5 sm:p-2 lg:p-2.5 rounded-xl sm:rounded-2xl shadow-lg border border-warm-border/60 animate-float-3 overflow-hidden">
+                <div className="relative w-full h-full overflow-hidden rounded-lg sm:rounded-xl">
                   <img
                     src="/assets/baby-feet.webp"
                     alt="Newborn baby feet gently held in hands with intricate mehndi henna"
@@ -271,45 +309,18 @@ export default function Hero({ onOpenBooking, onNavigate }) {
                     height={metaFeet.height}
                     className="w-full h-full object-cover"
                   />
+                  {/* Glint effect */}
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className={`absolute inset-0 w-[60%] h-[150%] -top-[25%] bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-[15deg] ${
+                      shouldAnimate ? 'animate-glint-side3' : ''
+                    }`} />
+                  </div>
                 </div>
               </div>
 
-              {/* 6. Rotating Circular "Book Now" Badge (18s per turn loop, pauses off-screen) */}
-              <div
-                onClick={() => onOpenBooking('Weddings')}
-                className={`absolute bottom-4 sm:bottom-8 right-6 sm:right-12 z-40 w-18 sm:w-22 md:w-24 h-18 sm:h-22 md:h-24 rounded-full bg-flash-yellow shadow-xl cursor-pointer hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group ${
-                  !isHeroInView ? 'paused-animation' : ''
-                }`}
-                aria-label="Click to book a shoot"
-                title="Click to book a shoot"
-              >
-                {/* Rotating Circular Text SVG (18s linear infinite) */}
-                <div className={`absolute inset-0 flex items-center justify-center animate-badge-rotate pointer-events-none ${
-                  !isHeroInView ? 'paused-animation' : ''
-                }`}>
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <path
-                      id="heroBadgePath"
-                      d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0"
-                      fill="none"
-                    />
-                    <text className="text-[10px] font-bold tracking-[0.24em] fill-ink uppercase">
-                      <textPath href="#heroBadgePath" startOffset="0%">
-                        BOOK NOW • BOOK NOW • BOOK NOW •
-                      </textPath>
-                    </text>
-                  </svg>
-                </div>
-
-                {/* Central Arrow */}
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-ink text-flash-yellow flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                  <ArrowUpRight size={15} strokeWidth={2.5} />
-                </div>
-              </div>
-
-              {/* 7. Script Calligraphy Badge "More than Photos" */}
-              <div className="hidden sm:block absolute -top-4 right-1 z-40 transform -rotate-12 pointer-events-none">
-                <span className="font-script text-2xl sm:text-3xl text-ink/75 font-bold drop-shadow-xs">
+              {/* 9. Script Calligraphy "More than Photos" - Placed safely BELOW the collage on the left, never overlapping photos */}
+              <div className="hidden lg:block absolute -bottom-6 left-4 z-30 transform -rotate-6 pointer-events-none">
+                <span className="font-script text-3xl xl:text-4xl text-ink/70 font-bold drop-shadow-xs">
                   More than Photos
                 </span>
               </div>

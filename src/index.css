@@ -41,7 +41,7 @@
   }
 
   /* Accessible focus ring on interactive elements */
-  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, [role="radio"]:focus-visible {
     outline: 2px solid #FFC531 !important;
     outline-offset: 2px !important;
   }
@@ -131,18 +131,18 @@
 
 /* Floating idle for collage frames */
 @keyframes slowFloat1 {
-  0%, 100% { transform: translateY(0px) rotate(-5deg); }
-  50% { transform: translateY(-6px) rotate(-4.5deg); }
+  0%, 100% { transform: translateY(0px) rotate(-4deg); }
+  50% { transform: translateY(-7px) rotate(-3.5deg); }
 }
 
 @keyframes slowFloat2 {
-  0%, 100% { transform: translateY(0px) rotate(4deg); }
-  50% { transform: translateY(5px) rotate(4.5deg); }
+  0%, 100% { transform: translateY(0px) rotate(5deg); }
+  50% { transform: translateY(6px) rotate(5.5deg); }
 }
 
 @keyframes slowFloat3 {
   0%, 100% { transform: translateY(0px) rotate(-3deg); }
-  50% { transform: translateY(-4px) rotate(-2.5deg); }
+  50% { transform: translateY(-5px) rotate(-2.5deg); }
 }
 
 .animate-float-1 {
@@ -164,17 +164,62 @@
   animation: badgeRotate 18s linear infinite;
 }
 
-/* Film strip drift: 40s loop along diagonal (only allowed loop #2) */
-@keyframes filmStripDrift {
-  0% { transform: rotate(-22deg) translateX(0px); }
-  50% { transform: rotate(-22deg) translateX(-40px); }
-  100% { transform: rotate(-22deg) translateX(0px); }
+/* Film strip drift: 40s loop along -12deg diagonal (only allowed loop #2) */
+@keyframes filmStripDrift12 {
+  0% { transform: rotate(-12deg) translate3d(0, 0, 0); }
+  50% { transform: rotate(-12deg) translate3d(-80px, 0, 0); }
+  100% { transform: rotate(-12deg) translate3d(0, 0, 0); }
 }
-.animate-film-drift {
-  animation: filmStripDrift 40s ease-in-out infinite;
+.animate-film-drift-12 {
+  animation: filmStripDrift12 40s ease-in-out infinite;
 }
 
-/* Pause animations when hero is off-screen */
+/* Radial Glow Drift: 16s ease-in-out infinite alternate (only allowed loop #3) */
+@keyframes heroGlowDrift {
+  0% { transform: translate3d(-30px, -20px, 0); }
+  50% { transform: translate3d(35px, 25px, 0); }
+  100% { transform: translate3d(-15px, 35px, 0); }
+}
+.animate-glow-drift {
+  animation: heroGlowDrift 16s ease-in-out infinite alternate;
+}
+
+/* Frame Glint: 1.4s sweep within 9s repeat cycle (only allowed loop #4) */
+@keyframes frameGlint {
+  0% {
+    transform: translateX(-180%) rotate(15deg);
+    opacity: 0;
+  }
+  2% {
+    opacity: 0.3;
+  }
+  15.5% {
+    transform: translateX(250%) rotate(15deg);
+    opacity: 0.3;
+  }
+  16% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(250%) rotate(15deg);
+    opacity: 0;
+  }
+}
+
+.animate-glint-main {
+  animation: frameGlint 9s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.animate-glint-side1 {
+  animation: frameGlint 9s cubic-bezier(0.22, 1, 0.36, 1) 250ms infinite;
+}
+.animate-glint-side2 {
+  animation: frameGlint 9s cubic-bezier(0.22, 1, 0.36, 1) 500ms infinite;
+}
+.animate-glint-side3 {
+  animation: frameGlint 9s cubic-bezier(0.22, 1, 0.36, 1) 750ms infinite;
+}
+
+/* Pause animations when hero is off-screen or tab is hidden */
 .paused-animation {
   animation-play-state: paused !important;
 }
@@ -192,18 +237,7 @@
   padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
 }
 
-/* Section reveal helper */
-.section-reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease);
-}
-.section-reveal.is-revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Respect prefers-reduced-motion */
+/* Respect prefers-reduced-motion: keep only static glow, no movement */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation: none !important;
@@ -212,7 +246,12 @@
     transform: none !important;
   }
   .animate-badge-rotate,
-  .animate-film-drift,
+  .animate-film-drift-12,
+  .animate-glow-drift,
+  .animate-glint-main,
+  .animate-glint-side1,
+  .animate-glint-side2,
+  .animate-glint-side3,
   .animate-float-1,
   .animate-float-2,
   .animate-float-3,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import StatsStrip from './components/StatsStrip';
 import WhatWeShoot from './components/WhatWeShoot';
 import BestWork from './components/BestWork';
 import Pricing from './components/Pricing';
@@ -21,6 +22,7 @@ export default function App() {
   // Mobile sticky bar conditions
   const [isHeroCtaOutOfView, setIsHeroCtaOutOfView] = useState(false);
   const [isContactInView, setIsContactInView] = useState(false);
+  const [isPricingCtaInView, setIsPricingCtaInView] = useState(false);
 
   // Booking Modal State (Shared BookingForm dialog)
   const [bookingModal, setBookingModal] = useState({
@@ -135,7 +137,7 @@ export default function App() {
       );
     }
 
-    // Default: Home Page (Hero, What we shoot, Best work, Pricing, Contact)
+    // Default: Home Page (Hero, StatsStrip, What we shoot, Best work, Pricing, Contact)
     return (
       <main>
         {/* 1. Hero Section */}
@@ -143,6 +145,9 @@ export default function App() {
           onOpenBooking={handleOpenBooking}
           onNavigate={navigate}
         />
+
+        {/* 1b. Slim Stats Strip (Directly below Hero) */}
+        <StatsStrip />
 
         {/* 2. What We Shoot Section */}
         <WhatWeShoot
@@ -158,6 +163,7 @@ export default function App() {
         {/* 4. Pricing Section */}
         <Pricing
           onOpenBooking={handleOpenBooking}
+          onPricingCtaInViewChange={setIsPricingCtaInView}
         />
 
         {/* 5. Contact Section */}
@@ -187,10 +193,11 @@ export default function App() {
       {/* Footer */}
       <Footer onNavigate={navigate} />
 
-      {/* Mobile Sticky Bottom Bar */}
+      {/* Mobile Sticky Bottom Bar (hides on contact or mobile pricing CTA) */}
       <StickyMobileBar
         isVisible={isHeroCtaOutOfView}
         isContactInView={isContactInView}
+        isPricingCtaInView={isPricingCtaInView}
         isModalOpen={bookingModal.isOpen}
         isMenuOpen={isMenuOpen}
         onOpenBooking={handleOpenBooking}

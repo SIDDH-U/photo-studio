@@ -4,6 +4,8 @@
  * Placeholder values are marked with TODO comments.
  */
 
+import { PLANS } from './plans';
+
 export const SITE = {
   studioName: "LUMO Photo Studio",
   shortName: "LUMO",
@@ -47,62 +49,8 @@ export const SITE = {
     { value: 1000, suffix: "+", label: "Stories told" }
   ],
 
-  // Pricing Packages
-  pricing: [
-    {
-      id: "basic",
-      name: "Basic",
-      price: "₹12,000",
-      rawPrice: 12000,
-      isSignature: false,
-      coverage: "2 hrs",
-      editedPhotos: "50+",
-      onlineGallery: true,
-      video: "—",
-      album: "—",
-      bullets: [
-        "2 hours coverage",
-        "50+ edited photos",
-        "Online gallery"
-      ]
-    },
-    {
-      id: "signature",
-      name: "Signature",
-      price: "₹24,000",
-      rawPrice: 24000,
-      isSignature: true,
-      badge: "Most booked",
-      coverage: "4 hrs",
-      editedPhotos: "150+",
-      onlineGallery: true,
-      video: "Highlights reel",
-      album: "—",
-      bullets: [
-        "4 hours coverage",
-        "150+ edited photos",
-        "Cinematic highlights (reel)"
-      ]
-    },
-    {
-      id: "premium",
-      name: "Premium",
-      price: "₹42,000",
-      rawPrice: 42000,
-      isSignature: false,
-      coverage: "Full day",
-      editedPhotos: "300+",
-      onlineGallery: true,
-      video: "Film + reel",
-      album: "Optional",
-      bullets: [
-        "Full day coverage",
-        "300+ edited photos",
-        "Cinematic film + reel",
-        "Premium album (optional)"
-      ]
-    }
-  ]
+  // Pricing Packages (imported from plans.js)
+  pricing: PLANS
 };
 
 /**
