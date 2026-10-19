@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 200ms;
+  --t-base: 500ms;
+  color-scheme: light dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F6F1E9;
+    color: #0E0E10;
+  }
+
+  body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      font-size: 14px;
+    }
+  }
+
+  h1, h2, h3, h4, .font-serif {
+    font-family: 'Fraunces', Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+
+  /* Accessible focus ring on interactive elements */
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid #FFC531 !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Subtle Film Grain for Dark Sections */
+.bg-grain {
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 0),
+    linear-gradient(to bottom, #0E0E10, #131316);
+  background-size: 24px 24px, 100% 100%;
+}
+
+/* Hide scrollbar for carousel but keep scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Primary yellow button soft light sweep (900ms, plays once on view) */
+.btn-yellow-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-yellow-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-200%) skewX(-20deg);
+  animation: lightSweep 900ms var(--ease) 500ms 1 forwards;
+  pointer-events: none;
+}
+
+@keyframes lightSweep {
+  0% {
+    transform: translateX(-200%) skewX(-20deg);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(300%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
+/* Button & interactive hover / press standards */
+.btn-interactive {
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+@media (hover: hover) {
+  .btn-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+  .btn-interactive:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+}
+.btn-interactive:active {
+  transform: scale(0.97) !important;
+}
+
+/* Card image zoom on hover (desktop only) */
+@media (hover: hover) {
+  .card-zoom:hover img {
+    transform: scale(1.04);
+    transition: transform 600ms var(--ease);
+  }
+  .card-zoom:hover .card-overlay {
+    opacity: 0.75;
+    transition: opacity 600ms var(--ease);
+  }
+}
+.card-touch:active {
+  transform: scale(0.98);
+}
+
+/* Floating idle for collage frames */
+@keyframes slowFloat1 {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); }
+  50% { transform: translateY(-6px) rotate(-4.5deg); }
+}
+
+@keyframes slowFloat2 {
+  0%, 100% { transform: translateY(0px) rotate(4deg); }
+  50% { transform: translateY(5px) rotate(4.5deg); }
+}
+
+@keyframes slowFloat3 {
+  0%, 100% { transform: translateY(0px) rotate(-3deg); }
+  50% { transform: translateY(-4px) rotate(-2.5deg); }
+}
+
+.animate-float-1 {
+  animation: slowFloat1 7s ease-in-out infinite;
+}
+.animate-float-2 {
+  animation: slowFloat2 8s ease-in-out infinite;
+}
+.animate-float-3 {
+  animation: slowFloat3 6.5s ease-in-out infinite;
+}
+
+/* Rotating badge: 18s per turn (only allowed loop #1) */
+@keyframes badgeRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-badge-rotate {
+  animation: badgeRotate 18s linear infinite;
+}
+
+/* Film strip drift: 40s loop along diagonal (only allowed loop #2) */
+@keyframes filmStripDrift {
+  0% { transform: rotate(-22deg) translateX(0px); }
+  50% { transform: rotate(-22deg) translateX(-40px); }
+  100% { transform: rotate(-22deg) translateX(0px); }
+}
+.animate-film-drift {
+  animation: filmStripDrift 40s ease-in-out infinite;
+}
+
+/* Pause animations when hero is off-screen */
+.paused-animation {
+  animation-play-state: paused !important;
+}
+
+/* Vintage film strip styling */
+.film-strip {
+  background: #111;
+  border-top: 5px dashed #444;
+  border-bottom: 5px dashed #444;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Safe area bottom padding for iPhone notch / home indicator */
+.safe-area-bottom {
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+}
+
+/* Section reveal helper */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease);
+}
+.section-reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+  .animate-badge-rotate,
+  .animate-film-drift,
+  .animate-float-1,
+  .animate-float-2,
+  .animate-float-3,
+  .btn-yellow-sweep::after {
+    animation: none !important;
+  }
+}
