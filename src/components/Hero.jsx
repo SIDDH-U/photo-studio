@@ -14,10 +14,22 @@ export default function Hero({ onOpenBooking, onNavigate }) {
   const collageRef = useRef(null);
   const heroRef = useRef(null);
 
-  const metaHero = getImageMeta('hero-1.webp');
-  const metaChild = getImageMeta('laughing-child.webp');
-  const metaFeet = getImageMeta('baby-feet.webp');
-  const metaSunset = getImageMeta('gallery-1.webp');
+  const mainPhoto = SITE.heroPhotos?.mainFrame || { src: 'hero-1.webp', alt: 'Joyful wedding couple smiling candidly' };
+  const sidePhoto1 = SITE.heroPhotos?.sideFrames?.[0] || { src: 'gallery-1.webp', alt: 'Couple enjoying golden sunset' };
+  const sidePhoto2 = SITE.heroPhotos?.sideFrames?.[1] || { src: 'baby-feet.webp', alt: 'Newborn baby feet' };
+  const sidePhoto3 = SITE.heroPhotos?.sideFrames?.[2] || { src: 'laughing-child.webp', alt: 'Laughing child outdoors' };
+  const filmStripList = SITE.heroPhotos?.filmStrip || [
+    { src: "gallery-w1.webp", alt: "film reel frame 1" },
+    { src: "gallery-w2.webp", alt: "film reel frame 2" },
+    { src: "gallery-p1.webp", alt: "film reel frame 3" },
+    { src: "gallery-f1.webp", alt: "film reel frame 4" },
+    { src: "gallery-w3.webp", alt: "film reel frame 5" }
+  ];
+
+  const metaHero = getImageMeta(mainPhoto.src);
+  const metaChild = getImageMeta(sidePhoto3.src);
+  const metaFeet = getImageMeta(sidePhoto2.src);
+  const metaSunset = getImageMeta(sidePhoto1.src);
 
   // Pause all animation loops when hero is off-screen or tab is hidden
   useEffect(() => {
@@ -103,13 +115,13 @@ export default function Hero({ onOpenBooking, onNavigate }) {
                 className="block whitespace-nowrap"
                 style={{ fontSize: 'clamp(30px, 9vw, 44px)' }}
               >
-                Real smiles.
+                {SITE.heroHeadline?.line1 || "Real smiles."}
               </span>
               <span 
                 className="block whitespace-nowrap"
                 style={{ fontSize: 'clamp(30px, 9vw, 44px)' }}
               >
-                Beautifully kept.
+                {SITE.heroHeadline?.line2 || "Beautifully kept."}
               </span>
             </h1>
 
@@ -188,29 +200,19 @@ export default function Hero({ onOpenBooking, onNavigate }) {
                 }`}
                 style={{ width: 'clamp(550px, 68vw, 1100px)' }}
               >
-                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-w1.webp" alt="film reel frame 1" className="w-full h-full object-cover opacity-80" />
-                </div>
-                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-w2.webp" alt="film reel frame 2" className="w-full h-full object-cover opacity-80" />
-                </div>
-                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-p1.webp" alt="film reel frame 3" className="w-full h-full object-cover opacity-80" />
-                </div>
-                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-f1.webp" alt="film reel frame 4" className="w-full h-full object-cover opacity-80" />
-                </div>
-                <div className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
-                  <img src="/assets/gallery-w3.webp" alt="film reel frame 5" className="w-full h-full object-cover opacity-80" />
-                </div>
+                {filmStripList.map((frame, idx) => (
+                  <div key={idx} className="w-14 sm:w-20 lg:w-28 h-10 sm:h-14 lg:h-20 bg-stone-900 border border-stone-700 overflow-hidden flex-shrink-0">
+                    <img src={`/assets/${frame.src}`} alt={frame.alt || `film frame ${idx + 1}`} className="w-full h-full object-cover opacity-80" />
+                  </div>
+                ))}
               </div>
 
               {/* 4. Top-Left Frame: Outdoor Sunset Couple (Side frame ~60% of main frame) */}
               <div className="absolute top-[4%] sm:top-[6%] left-[3%] sm:left-[6%] lg:left-[4%] z-10 w-[34vw] sm:w-[150px] lg:w-[clamp(210px,18vw,330px)] aspect-[4/5] bg-white p-1.5 sm:p-2 lg:p-2.5 rounded-xl sm:rounded-2xl shadow-lg border border-warm-border/60 animate-float-3 overflow-hidden">
                 <div className="relative w-full h-full overflow-hidden rounded-lg sm:rounded-xl">
                   <img
-                    src="/assets/gallery-1.webp"
-                    alt="Couple enjoying golden sunset"
+                    src={`/assets/${sidePhoto1.src}`}
+                    alt={sidePhoto1.alt}
                     width={metaSunset.width}
                     height={metaSunset.height}
                     className="w-full h-full object-cover"
@@ -228,8 +230,8 @@ export default function Hero({ onOpenBooking, onNavigate }) {
               <div className="absolute top-[8%] sm:top-[10%] left-[22%] sm:left-[26%] lg:left-[24%] z-20 w-[62vw] sm:w-[270px] lg:w-[clamp(360px,29vw,560px)] aspect-[4/5] bg-white p-2 sm:p-3 lg:p-4 rounded-2xl sm:rounded-3xl shadow-2xl border border-warm-border/80 animate-float-1 overflow-hidden">
                 <div className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl">
                   <img
-                    src="/assets/hero-1.webp"
-                    alt="Joyful wedding couple smiling candidly"
+                    src={`/assets/${mainPhoto.src}`}
+                    alt={mainPhoto.alt}
                     width={metaHero.width}
                     height={metaHero.height}
                     className="w-full h-full object-cover"
@@ -284,8 +286,8 @@ export default function Hero({ onOpenBooking, onNavigate }) {
               <div className="absolute top-[6%] sm:top-[8%] right-[2%] sm:right-[4%] lg:-right-4 z-25 w-[34vw] sm:w-[150px] lg:w-[clamp(210px,18vw,330px)] aspect-square bg-white p-1.5 sm:p-2 lg:p-2.5 rounded-xl sm:rounded-2xl shadow-xl border border-warm-border/60 animate-float-2 overflow-hidden">
                 <div className="relative w-full h-full overflow-hidden rounded-lg sm:rounded-xl">
                   <img
-                    src="/assets/laughing-child.webp"
-                    alt="Laughing child outdoors with bright smile"
+                    src={`/assets/${sidePhoto3.src}`}
+                    alt={sidePhoto3.alt}
                     width={metaChild.width}
                     height={metaChild.height}
                     className="w-full h-full object-cover"
@@ -303,8 +305,8 @@ export default function Hero({ onOpenBooking, onNavigate }) {
               <div className="absolute bottom-[2%] sm:bottom-[4%] left-[6%] sm:left-[10%] lg:left-[8%] z-25 w-[32vw] sm:w-[140px] lg:w-[clamp(190px,16vw,300px)] aspect-square bg-white p-1.5 sm:p-2 lg:p-2.5 rounded-xl sm:rounded-2xl shadow-lg border border-warm-border/60 animate-float-3 overflow-hidden">
                 <div className="relative w-full h-full overflow-hidden rounded-lg sm:rounded-xl">
                   <img
-                    src="/assets/baby-feet.webp"
-                    alt="Newborn baby feet gently held in hands with intricate mehndi henna"
+                    src={`/assets/${sidePhoto2.src}`}
+                    alt={sidePhoto2.alt}
                     width={metaFeet.width}
                     height={metaFeet.height}
                     className="w-full h-full object-cover"

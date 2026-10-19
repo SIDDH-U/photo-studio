@@ -99,11 +99,11 @@ export default function BookingForm({
     if (!isNameValid || !isPhoneValid) return;
 
     // Build message:
-    // "Hi LUMO, I'm {name}. I'd like to book a {type} shoot{ on date}{ ({plan} plan)}. My number: +91 {phone}"
+    // "Hi {studio}, I'm {name}. I'd like to book a {type} shoot{ on date}{ ({plan} plan)}. My number: +91 {phone}"
     let datePart = preferredDate ? ` on ${preferredDate}` : '';
     let planPart = selectedPlan ? ` (${selectedPlan} plan)` : '';
     
-    const message = `Hi LUMO, I'm ${name.trim()}. I'd like to book a ${shootType} shoot${datePart}${planPart}. My number: +91 ${phone.trim()}`;
+    const message = `Hi ${SITE.shortName}, I'm ${name.trim()}. I'd like to book a ${shootType} shoot${datePart}${planPart}. My number: +91 ${phone.trim()}`;
     const targetUrl = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(message)}`;
     
     setWhatsappUrl(targetUrl);
@@ -251,7 +251,7 @@ export default function BookingForm({
           <CheckCircle2 size={46} className="text-green-600 mb-2.5" />
           <h3 className="font-serif text-2xl font-bold text-ink">Opening WhatsApp…</h3>
           <p className="text-xs sm:text-sm text-warm-muted mt-1.5 max-w-xs">
-            Connecting directly with LUMO Photo Studio team in Nanded.
+            Connecting directly with {SITE.studioName} team in {SITE.address.city}.
           </p>
           
           {/* Fallback Link */}
@@ -346,7 +346,7 @@ export default function BookingForm({
               Reserve Your Date
             </span>
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink mt-0.5">
-              Book a Shoot with LUMO
+              Book a Shoot with {SITE.shortName}
             </h3>
           </div>
 

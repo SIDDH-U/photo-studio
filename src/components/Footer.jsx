@@ -1,6 +1,7 @@
 import React from 'react';
 import { SITE } from '../data/site';
 import { InstagramIcon, YoutubeIcon, WhatsAppIcon } from './SocialIcons';
+import Logo from './Logo';
 
 export default function Footer({ onNavigate }) {
   const scrollTo = (id) => {
@@ -18,34 +19,37 @@ export default function Footer({ onNavigate }) {
           
           {/* Logo & Subtitle */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <span className="font-serif text-2xl font-bold tracking-tight text-ink">
-              {SITE.shortName}
-            </span>
-            <span className="text-[9px] uppercase tracking-[0.25em] font-medium text-warm-muted -mt-1">
-              PHOTO STUDIO
-            </span>
+            <Logo />
             <p className="text-xs text-[#524E47] mt-1.5 max-w-xs">
-              Capturing heartfelt smiles and quiet elegance in Nanded, Maharashtra.
+              Capturing heartfelt smiles and quiet elegance in {SITE.address.city}, {SITE.address.state}.
             </p>
           </div>
 
           {/* Navigation Links */}
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-ink/80">
-            <button onClick={() => scrollTo('best-work')} className="hover:text-ink transition-colors">
-              Work
-            </button>
-            <button onClick={() => scrollTo('what-we-shoot')} className="hover:text-ink transition-colors">
-              Categories
-            </button>
-            <button onClick={() => scrollTo('pricing')} className="hover:text-ink transition-colors">
-              Pricing
-            </button>
+            {SITE.sections?.showPortfolio !== false && (
+              <button onClick={() => scrollTo('best-work')} className="hover:text-ink transition-colors">
+                Work
+              </button>
+            )}
+            {SITE.sections?.showServices !== false && (
+              <button onClick={() => scrollTo('what-we-shoot')} className="hover:text-ink transition-colors">
+                Categories
+              </button>
+            )}
+            {SITE.sections?.showPackages !== false && (
+              <button onClick={() => scrollTo('pricing')} className="hover:text-ink transition-colors">
+                Pricing
+              </button>
+            )}
             <button onClick={() => scrollTo('contact')} className="hover:text-ink transition-colors">
               Contact
             </button>
-            <button onClick={() => onNavigate('/gallery')} className="hover:text-ink transition-colors">
-              Full Gallery
-            </button>
+            {SITE.sections?.showPortfolio !== false && (
+              <button onClick={() => onNavigate('/gallery')} className="hover:text-ink transition-colors">
+                Full Gallery
+              </button>
+            )}
           </div>
 
           {/* Social Icons (Instagram, WhatsApp, YouTube) */}
@@ -83,7 +87,7 @@ export default function Footer({ onNavigate }) {
 
         {/* One Clean Copyright Line */}
         <div className="pt-5 text-center text-xs text-[#5A554E]">
-          © {new Date().getFullYear()} {SITE.studioName}. Nanded, Maharashtra, India. All rights reserved.
+          © {new Date().getFullYear()} {SITE.studioName}. {SITE.address.city}, {SITE.address.state}, {SITE.address.country}. All rights reserved.
         </div>
       </div>
     </footer>

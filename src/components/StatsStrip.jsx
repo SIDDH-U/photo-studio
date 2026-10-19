@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SITE } from '../data/site';
+import SampleBadge from './SampleBadge';
 
 function CountUpNumber({ target, suffix = "", inView }) {
   const [count, setCount] = useState(0);
@@ -32,6 +33,11 @@ export default function StatsStrip() {
   const [inView, setInView] = useState(false);
   const stripRef = useRef(null);
 
+  // If section flag is false or no stats, skip section
+  if (SITE.sections?.showStats === false || !SITE.stats?.length) {
+    return null;
+  }
+
   useEffect(() => {
     if (!stripRef.current) return;
     const observer = new IntersectionObserver(
@@ -55,6 +61,11 @@ export default function StatsStrip() {
       aria-label="Studio highlights and stats"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {SITE.sampleMode && (
+          <div className="flex justify-center mb-2">
+            <SampleBadge />
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-2 sm:gap-8 max-w-3xl mx-auto text-center divide-x divide-warm-border/70">
           {SITE.stats.map((stat, idx) => (
             <div key={idx} className="flex flex-col items-center justify-center px-2 sm:px-4">

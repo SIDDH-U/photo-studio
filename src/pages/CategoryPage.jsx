@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Plus, Maximize2 } from 'lucide-react';
 import { CATEGORIES } from '../data/gallery';
 import { getImageMeta } from '../data/studioData';
+import SampleBadge from '../components/SampleBadge';
 
 export default function CategoryPage({ slug, onNavigate, onOpenBooking, onOpenLightbox }) {
   const currentCategory = CATEGORIES.find((c) => c.slug === slug) || CATEGORIES[0];
@@ -45,9 +46,12 @@ export default function CategoryPage({ slug, onNavigate, onOpenBooking, onOpenLi
             </button>
 
             <div>
-              <h1 className="font-serif text-5xl font-bold text-ink tracking-tight">
-                {currentCategory.title}
-              </h1>
+              <div className="flex items-center gap-2.5">
+                <h1 className="font-serif text-5xl font-bold text-ink tracking-tight">
+                  {currentCategory.title}
+                </h1>
+                <SampleBadge />
+              </div>
               <p className="text-sm text-[#403D37] mt-3 leading-relaxed max-w-sm">
                 {currentCategory.description}
               </p>
@@ -176,9 +180,12 @@ export default function CategoryPage({ slug, onNavigate, onOpenBooking, onOpenLi
               <span>Back</span>
             </button>
 
-            <h1 className="font-serif text-2xl font-bold text-ink">
-              {currentCategory.title}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="font-serif text-2xl font-bold text-ink">
+                {currentCategory.title}
+              </h1>
+              <SampleBadge />
+            </div>
 
             <div className="w-10" />
           </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { getImageMeta } from '../data/studioData';
+import { SITE } from '../data/site';
 
 export default function Lightbox({ isOpen, onClose, images, currentIndex, onNext, onPrev, onBook }) {
   const touchStartX = useRef(0);
@@ -133,7 +134,7 @@ export default function Lightbox({ isOpen, onClose, images, currentIndex, onNext
           {/* Caption & Book Shoot CTA */}
           <div className="mt-3.5 flex flex-wrap items-center justify-between gap-3 w-full max-w-xl px-2">
             <p className="text-white/85 text-xs sm:text-sm font-medium line-clamp-2">
-              {currentImage.alt || currentImage.title || 'LUMO Photo Studio'}
+              {currentImage.alt || currentImage.title || SITE.studioName}
             </p>
             {onBook && (
               <button

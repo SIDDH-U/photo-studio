@@ -4,19 +4,82 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root,
+[data-theme="cream-warm"] {
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --t-fast: 200ms;
   --t-base: 500ms;
-  color-scheme: light dark;
+  color-scheme: light;
+
+  /* Theme tokens: cream-warm (default) */
+  --color-bg-rgb: 246 241 233;
+  --color-bg-soft-rgb: 237 230 218;
+  --color-card-rgb: 255 255 255;
+  --color-border-rgb: 232 225 213;
+  --color-ink-rgb: 14 14 16;
+  --color-ink-card-rgb: 22 22 25;
+  --color-ink-border-rgb: 40 40 46;
+  --color-cta-rgb: 255 197 49;
+  --color-cta-hover-rgb: 229 176 43;
+  --color-cta-light-rgb: 255 244 214;
+  --color-muted-rgb: 140 133 123;
+  --color-cta-text: #0E0E10;
+}
+
+[data-theme="ivory-sage"] {
+  color-scheme: light;
+  --color-bg-rgb: 245 246 242;
+  --color-bg-soft-rgb: 230 235 225;
+  --color-card-rgb: 255 255 255;
+  --color-border-rgb: 216 224 210;
+  --color-ink-rgb: 20 28 22;
+  --color-ink-card-rgb: 26 36 29;
+  --color-ink-border-rgb: 41 56 45;
+  --color-cta-rgb: 63 110 76;
+  --color-cta-hover-rgb: 51 92 62;
+  --color-cta-light-rgb: 226 236 229;
+  --color-muted-rgb: 115 130 118;
+  --color-cta-text: #FFFFFF;
+}
+
+[data-theme="noir-gold"] {
+  color-scheme: dark;
+  --color-bg-rgb: 18 18 20;
+  --color-bg-soft-rgb: 28 28 32;
+  --color-card-rgb: 30 30 36;
+  --color-border-rgb: 46 46 54;
+  --color-ink-rgb: 240 240 242;
+  --color-ink-card-rgb: 22 22 26;
+  --color-ink-border-rgb: 42 42 50;
+  --color-cta-rgb: 229 184 66;
+  --color-cta-hover-rgb: 207 163 53;
+  --color-cta-light-rgb: 51 42 23;
+  --color-muted-rgb: 158 158 168;
+  --color-cta-text: #0A0A0C;
+}
+
+[data-theme="blush-rose"] {
+  color-scheme: light;
+  --color-bg-rgb: 250 244 240;
+  --color-bg-soft-rgb: 239 228 222;
+  --color-card-rgb: 255 255 255;
+  --color-border-rgb: 230 213 205;
+  --color-ink-rgb: 28 18 21;
+  --color-ink-card-rgb: 39 26 30;
+  --color-ink-border-rgb: 58 39 45;
+  --color-cta-rgb: 201 93 74;
+  --color-cta-hover-rgb: 178 79 62;
+  --color-cta-light-rgb: 249 232 228;
+  --color-muted-rgb: 140 119 124;
+  --color-cta-text: #FFFFFF;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #F6F1E9;
-    color: #0E0E10;
+    background-color: rgb(var(--color-bg-rgb));
+    color: rgb(var(--color-ink-rgb));
   }
 
   body {

@@ -3,8 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Maximize2 } from 'lucide-react';
 import { FEATURED_BEST_WORK } from '../data/gallery';
 import { getImageMeta } from '../data/studioData';
+import { SITE } from '../data/site';
+import SampleBadge from './SampleBadge';
 
 export default function BestWork({ onNavigate, onOpenLightbox }) {
+  // If section flag is false, skip cleanly
+  if (SITE.sections?.showPortfolio === false) {
+    return null;
+  }
+
   const [activeFeaturedIndex, setActiveFeaturedIndex] = useState(0);
   const carouselRef = useRef(null);
   const items = FEATURED_BEST_WORK;
@@ -44,9 +51,12 @@ export default function BestWork({ onNavigate, onOpenLightbox }) {
           {/* Left Column: Title + Numbered Interactive List of 6 Featured Titles */}
           <div className="lg:col-span-4 flex flex-col justify-between h-[490px] pr-2">
             <div>
-              <span className="text-xs uppercase tracking-[0.22em] font-semibold text-flash-yellow">
-                OUR FAVOURITES
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs uppercase tracking-[0.22em] font-semibold text-flash-yellow">
+                  OUR FAVOURITES
+                </span>
+                <SampleBadge light={true} />
+              </div>
               <h2 className="font-serif text-4xl xl:text-5xl font-bold text-white mt-1">
                 Best work
               </h2>

@@ -59,7 +59,7 @@ export default function Contact({ onContactInViewChange }) {
             </a>
 
             <a
-              href={`https://wa.me/${SITE.whatsappNumber}?text=Hi%20LUMO%2C%20I'd%20like%20to%20inquire%20about%20a%20photoshoot.`}
+              href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hi ${SITE.shortName}, I'd like to inquire about a photoshoot.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-warm-border/70 shadow-xs active:scale-95 transition-transform"
@@ -71,24 +71,28 @@ export default function Contact({ onContactInViewChange }) {
               <span className="text-[11px] font-semibold text-ink mt-1.5">WhatsApp</span>
             </a>
 
-            <a
-              href={SITE.instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-warm-border/70 shadow-xs active:scale-95 transition-transform"
-              aria-label="View Instagram"
-            >
-              <div className="w-9 h-9 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center">
-                <InstagramIcon size={17} />
-              </div>
-              <span className="text-[11px] font-semibold text-ink mt-1.5">Instagram</span>
-            </a>
+            {SITE.sections?.showInstagram !== false && SITE.instagramUrl && (
+              <a
+                href={SITE.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-warm-border/70 shadow-xs active:scale-95 transition-transform"
+                aria-label="View Instagram"
+              >
+                <div className="w-9 h-9 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center">
+                  <InstagramIcon size={17} />
+                </div>
+                <span className="text-[11px] font-semibold text-ink mt-1.5">Instagram</span>
+              </a>
+            )}
           </div>
 
           {/* Shared Booking Form (Inline Mode) */}
-          <div>
-            <BookingForm inline={true} />
-          </div>
+          {SITE.sections?.showBookingForm !== false && (
+            <div>
+              <BookingForm inline={true} />
+            </div>
+          )}
 
           {/* Compact Info Card (No iframe on mobile) */}
           <div className="bg-white p-5 rounded-2xl border border-warm-border/70 shadow-xs space-y-3">
@@ -132,19 +136,21 @@ export default function Contact({ onContactInViewChange }) {
           {/* Right Column: Google Maps Embed + Info & Action Buttons (col-span-6) */}
           <div className="col-span-6 bg-white p-7 rounded-card border border-warm-border/70 shadow-xs flex flex-col justify-between">
             {/* Real Google Maps Embed (Lazy Loaded) */}
-            <div className="relative w-full h-[220px] rounded-xl overflow-hidden border border-warm-border/60 mb-5">
-              <iframe
-                title="LUMO Photo Studio Location"
-                src={SITE.mapsEmbedUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-full"
-              />
-            </div>
+            {SITE.sections?.showMap !== false && SITE.mapsEmbedUrl && (
+              <div className="relative w-full h-[220px] rounded-xl overflow-hidden border border-warm-border/60 mb-5">
+                <iframe
+                  title={`${SITE.studioName} Location`}
+                  src={SITE.mapsEmbedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full"
+                />
+              </div>
+            )}
 
             {/* Address & Hours */}
             <div className="space-y-3">

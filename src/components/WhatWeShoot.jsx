@@ -3,8 +3,15 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { CATEGORIES } from '../data/gallery';
 import { getImageMeta } from '../data/studioData';
+import { SITE } from '../data/site';
+import SampleBadge from './SampleBadge';
 
 export default function WhatWeShoot({ onNavigate }) {
+  // If section flag is disabled, skip cleanly
+  if (SITE.sections?.showServices === false) {
+    return null;
+  }
+
   // Default expanded category on desktop is 'weddings'
   const [hoveredSlug, setHoveredSlug] = useState('weddings');
 
@@ -18,9 +25,12 @@ export default function WhatWeShoot({ onNavigate }) {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-10 gap-3">
           <div>
-            <span className="text-xs uppercase tracking-[0.22em] font-semibold text-[#5A554E]">
-              OUR CATEGORIES
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase tracking-[0.22em] font-semibold text-[#5A554E]">
+                OUR CATEGORIES
+              </span>
+              <SampleBadge />
+            </div>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-ink mt-1">
               What we shoot
             </h2>

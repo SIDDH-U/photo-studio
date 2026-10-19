@@ -12,10 +12,17 @@ import GalleryPage from './pages/GalleryPage';
 import Lightbox from './components/Lightbox';
 import BookingForm from './components/BookingForm';
 import StickyMobileBar from './components/StickyMobileBar';
+import { SITE } from './data/site';
+import { AboutSection, ProcessSection, ReviewsSection, FaqSection } from './components/OptionalSections';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
   
+  // Set active theme preset on html tag
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', SITE.theme || 'cream-warm');
+  }, []);
+
   // Mobile menu state
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -141,10 +148,12 @@ export default function App() {
     return (
       <main>
         {/* 1. Hero Section */}
-        <Hero
-          onOpenBooking={handleOpenBooking}
-          onNavigate={navigate}
-        />
+        {SITE.sections?.showHero !== false && (
+          <Hero
+            onOpenBooking={handleOpenBooking}
+            onNavigate={navigate}
+          />
+        )}
 
         {/* 1b. Slim Stats Strip (Directly below Hero) */}
         <StatsStrip />
@@ -154,17 +163,29 @@ export default function App() {
           onNavigate={navigate}
         />
 
+        {/* 2b. Optional Process Section */}
+        <ProcessSection />
+
         {/* 3. Best Work Preview Section */}
         <BestWork
           onNavigate={navigate}
           onOpenLightbox={handleOpenLightbox}
         />
 
+        {/* 3b. Optional About Section */}
+        <AboutSection />
+
         {/* 4. Pricing Section */}
         <Pricing
           onOpenBooking={handleOpenBooking}
           onPricingCtaInViewChange={setIsPricingCtaInView}
         />
+
+        {/* 4b. Optional Reviews / Testimonials Section */}
+        <ReviewsSection />
+
+        {/* 4c. Optional FAQs Section */}
+        <FaqSection />
 
         {/* 5. Contact Section */}
         <Contact

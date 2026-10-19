@@ -1,67 +1,105 @@
 /**
- * LUMO PHOTO STUDIO — SINGLE SOURCE OF TRUTH (SITE CONFIG)
- * All studio details, links, contact numbers, hours, and addresses are configured here.
- * Placeholder values are marked with TODO comments.
+ * SINGLE SOURCE OF TRUTH (SITE CONFIG)
+ * Derived cleanly from /config/studio.config.js and /config/specialty.photography.config.js.
  */
 
-import { PLANS } from './plans';
+import { studioConfig } from '../../config/studio.config.js';
+import { specialtyConfig } from '../../config/specialty.photography.config.js';
 
 export const SITE = {
-  studioName: "LUMO Photo Studio",
-  shortName: "LUMO",
-  tagline: "Real smiles. Beautifully kept.",
-  subline: "Candid moments. Timeless stories. Beautifully captured for a lifetime.",
+  studioName: studioConfig.name,
+  shortName: studioConfig.shortName || studioConfig.name,
+  tagline: studioConfig.heroHeadline ? `${studioConfig.heroHeadline.line1} ${studioConfig.heroHeadline.line2}` : studioConfig.tagline,
+  subline: studioConfig.heroSubtext,
+  heroHeadline: studioConfig.heroHeadline,
+  slug: studioConfig.slug,
   
-  // Contact & Social (Digits with country code for WhatsApp)
-  phone: "+91 98765 43210", // TODO: Client to provide real phone number
-  phoneRaw: "+919876543210",
-  whatsappNumber: "919876543210", // TODO: Client to provide real WhatsApp number
-  email: "hello@lumostudio.com", // TODO: Client to provide real email
+  // Contact & Social
+  phone: studioConfig.phone,
+  phoneRaw: studioConfig.phoneRaw,
+  whatsappNumber: studioConfig.whatsappNumber,
+  email: studioConfig.email,
 
   // Location & Hours
   address: {
-    street: "123 Creative Lane", // TODO: Client to provide real street address
-    area: "Station Road",
-    city: "Nanded",
-    state: "Maharashtra",
-    postalCode: "431601",
-    country: "India",
-    formatted: "123 Creative Lane, Nanded, Maharashtra 431601, India"
+    street: studioConfig.address,
+    area: studioConfig.area,
+    city: studioConfig.city,
+    state: studioConfig.state,
+    postalCode: studioConfig.pincode,
+    country: studioConfig.country || "India",
+    formatted: studioConfig.formattedAddress
   },
-  hours: "Mon – Sun • 10:00 AM – 8:00 PM", // TODO: Client to confirm studio hours
+  hours: studioConfig.hours.display || `${studioConfig.hours.weekday} (weekdays), ${studioConfig.hours.weekend} (weekends)`,
   
-  // Google Maps links
-  mapsUrl: "https://maps.google.com/?q=Nanded,+Maharashtra,+India",
-  // Real lazy-loaded Google Maps embed for Nanded, Maharashtra
-  mapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60307.45266851659!2d77.27581179069357!3d19.14283870370425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd1d66bb9d31721%3A0x4389fbced6d23e16!2sNanded%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1718000000000!5m2!1sen!2sin",
+  // Maps links
+  mapsUrl: studioConfig.mapsLink,
+  mapsEmbedUrl: studioConfig.embedMapUrl,
 
   // Social Links
-  instagramUrl: "https://instagram.com/lumostudio.in", // TODO: Client to provide real Instagram URL
-  youtubeUrl: "https://youtube.com/@lumostudio", // TODO: Client to provide real YouTube URL
+  instagramUrl: studioConfig.socials?.instagram || "",
+  youtubeUrl: studioConfig.socials?.youtube || "",
+  facebookUrl: studioConfig.socials?.facebook || "",
 
-  // Booking notice (empty by default; set string if studio has high season booking notice)
-  bookingNote: "", // e.g. "Currently booking wedding dates for Q4 2026."
+  // Lead Photographer
+  leadPhotographer: studioConfig.leadPhotographer,
 
-  // Stats for Hero
+  // Booking notice
+  bookingNote: studioConfig.bookingNote || "",
+
+  // Starting price
+  startingPrice: studioConfig.startingPrice || "",
+
+  // Stats for Hero / StatsStrip
   stats: [
-    { value: 500, suffix: "+", label: "Happy clients" },
-    { value: 5, suffix: "+", label: "Years of experience" },
-    { value: 1000, suffix: "+", label: "Stories told" }
-  ],
+    !studioConfig.stats?.happyClients?.hide && {
+      value: studioConfig.stats?.happyClients?.value ?? 500,
+      suffix: studioConfig.stats?.happyClients?.suffix ?? "+",
+      label: studioConfig.stats?.happyClients?.label ?? "Happy clients"
+    },
+    !studioConfig.stats?.yearsExperience?.hide && {
+      value: studioConfig.stats?.yearsExperience?.value ?? 5,
+      suffix: studioConfig.stats?.yearsExperience?.suffix ?? "+",
+      label: studioConfig.stats?.yearsExperience?.label ?? "Years of experience"
+    },
+    !studioConfig.stats?.eventsCovered?.hide && {
+      value: studioConfig.stats?.eventsCovered?.value ?? 1000,
+      suffix: studioConfig.stats?.eventsCovered?.suffix ?? "+",
+      label: studioConfig.stats?.eventsCovered?.label ?? "Stories told"
+    }
+  ].filter(Boolean),
 
-  // Pricing Packages (imported from plans.js)
-  pricing: PLANS
+  // Raw stats object
+  rawStats: studioConfig.stats,
+
+  // Section visibility flags
+  sections: studioConfig.sections,
+
+  // Sample mode
+  sampleMode: studioConfig.sampleMode,
+
+  // Theme
+  theme: studioConfig.theme,
+
+  // Logo
+  logoImage: studioConfig.logoImage,
+
+  // Pricing Packages
+  pricing: specialtyConfig.plans,
+
+  // Hero photos
+  heroPhotos: specialtyConfig.heroPhotos
 };
 
 /**
- * Generates Schema.org LocalBusiness JSON-LD structure
+ * Generates Schema.org LocalBusiness / PhotographyBusiness JSON-LD structure
  */
 export function getLocalBusinessSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "PhotographyStudio",
     "name": SITE.studioName,
-    "image": "https://lumostudio.in/assets/hero-1.webp",
+    "image": `${studioConfig.domain || ""}/assets/hero-1.webp`,
     "telephone": SITE.phoneRaw,
     "email": SITE.email,
     "address": {
@@ -94,10 +132,13 @@ export function getLocalBusinessSchema() {
       }
     ],
     "priceRange": "₹₹",
-    "url": "https://lumostudio.in",
+    "url": studioConfig.domain || "",
     "sameAs": [
       SITE.instagramUrl,
-      SITE.youtubeUrl
-    ]
+      SITE.youtubeUrl,
+      SITE.facebookUrl
+    ].filter(Boolean)
   };
 }
+
+export default SITE;

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Maximize2, Plus } from 'lucide-react';
 import { CATEGORIES } from '../data/gallery';
 import { getImageMeta } from '../data/studioData';
+import { SITE } from '../data/site';
+import SampleBadge from '../components/SampleBadge';
 
 export default function GalleryPage({ onNavigate, onOpenBooking, onOpenLightbox }) {
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -54,14 +56,17 @@ export default function GalleryPage({ onNavigate, onOpenBooking, onOpenLightbox 
 
         {/* Gallery Header */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span className="text-xs uppercase tracking-[0.25em] font-semibold text-[#5A554E]">
-            CURATED PORTFOLIO
-          </span>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-xs uppercase tracking-[0.25em] font-semibold text-[#5A554E]">
+              CURATED PORTFOLIO
+            </span>
+            <SampleBadge />
+          </div>
           <h1 className="font-serif text-4xl sm:text-5xl font-bold text-ink mt-1">
             The Full Gallery
           </h1>
           <p className="text-sm sm:text-base text-[#403D37] mt-2.5">
-            Real smiles, candid gestures, and heartfelt memories captured by LUMO Photo Studio.
+            Real smiles, candid gestures, and heartfelt memories captured by {SITE.studioName}.
           </p>
         </div>
 
@@ -145,7 +150,7 @@ export default function GalleryPage({ onNavigate, onOpenBooking, onOpenLightbox 
             Let's create timeless stories together
           </h2>
           <p className="text-sm text-white/70 mt-2 max-w-md">
-            Sessions in studio or on-location across Nanded and Maharashtra.
+            Sessions in studio or on-location across {SITE.address.city} and {SITE.address.state}.
           </p>
           <button
             onClick={() => onOpenBooking('Weddings')}

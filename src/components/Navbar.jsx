@@ -3,6 +3,7 @@ import { Menu, X, ArrowRight, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SITE } from '../data/site';
 import { InstagramIcon, YoutubeIcon, WhatsAppIcon } from './SocialIcons';
+import Logo from './Logo';
 
 export default function Navbar({ onNavigate, currentPath, onOpenBooking, isMenuOpen, setIsMenuOpen }) {
   const [scrolled, setScrolled] = useState(false);
@@ -74,11 +75,11 @@ export default function Navbar({ onNavigate, currentPath, onOpenBooking, isMenuO
   };
 
   const menuLinks = [
-    { label: "Work", sectionId: "best-work" },
-    { label: "Categories", sectionId: "what-we-shoot" },
-    { label: "Pricing", sectionId: "pricing" },
+    SITE.sections?.showPortfolio !== false && { label: "Work", sectionId: "best-work" },
+    SITE.sections?.showServices !== false && { label: "Categories", sectionId: "what-we-shoot" },
+    SITE.sections?.showPackages !== false && { label: "Pricing", sectionId: "pricing" },
     { label: "Contact", sectionId: "contact" }
-  ];
+  ].filter(Boolean);
 
   return (
     <>
@@ -95,40 +96,40 @@ export default function Navbar({ onNavigate, currentPath, onOpenBooking, isMenuO
           {/* Brand Logo */}
           <button
             onClick={(e) => handleLinkClick(e, '/', null)}
-            className="flex flex-col text-left group"
-            aria-label="LUMO Photo Studio Home"
+            aria-label={`${SITE.studioName} Home`}
           >
-            <span className="font-serif text-2xl sm:text-2xl font-bold tracking-tight text-ink group-hover:text-ink/80 transition-colors">
-              {SITE.shortName}
-            </span>
-            <span className="text-[9px] uppercase tracking-[0.25em] font-medium text-warm-muted -mt-1">
-              PHOTO STUDIO
-            </span>
+            <Logo />
           </button>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-8">
-            <a
-              href="#best-work"
-              onClick={(e) => handleLinkClick(e, '/', 'best-work')}
-              className="text-sm font-medium text-ink/80 hover:text-ink transition-colors"
-            >
-              Work
-            </a>
-            <a
-              href="#what-we-shoot"
-              onClick={(e) => handleLinkClick(e, '/', 'what-we-shoot')}
-              className="text-sm font-medium text-ink/80 hover:text-ink transition-colors"
-            >
-              Categories
-            </a>
-            <a
-              href="#pricing"
-              onClick={(e) => handleLinkClick(e, '/', 'pricing')}
-              className="text-sm font-medium text-ink/80 hover:text-ink transition-colors"
-            >
-              Pricing
-            </a>
+            {SITE.sections?.showPortfolio !== false && (
+              <a
+                href="#best-work"
+                onClick={(e) => handleLinkClick(e, '/', 'best-work')}
+                className="text-sm font-medium text-ink/80 hover:text-ink transition-colors"
+              >
+                Work
+              </a>
+            )}
+            {SITE.sections?.showServices !== false && (
+              <a
+                href="#what-we-shoot"
+                onClick={(e) => handleLinkClick(e, '/', 'what-we-shoot')}
+                className="text-sm font-medium text-ink/80 hover:text-ink transition-colors"
+              >
+                Categories
+              </a>
+            )}
+            {SITE.sections?.showPackages !== false && (
+              <a
+                href="#pricing"
+                onClick={(e) => handleLinkClick(e, '/', 'pricing')}
+                className="text-sm font-medium text-ink/80 hover:text-ink transition-colors"
+              >
+                Pricing
+              </a>
+            )}
             <a
               href="#contact"
               onClick={(e) => handleLinkClick(e, '/', 'contact')}
@@ -174,14 +175,7 @@ export default function Navbar({ onNavigate, currentPath, onOpenBooking, isMenuO
           >
             {/* Top Bar inside Menu */}
             <div className="flex items-center justify-between">
-              <div className="flex flex-col text-left">
-                <span className="font-serif text-2xl font-bold tracking-tight text-white">
-                  {SITE.shortName}
-                </span>
-                <span className="text-[9px] uppercase tracking-[0.25em] font-medium text-white/50 -mt-1">
-                  PHOTO STUDIO
-                </span>
-              </div>
+              <Logo isLight={true} />
 
               <button
                 onClick={() => setIsMenuOpen(false)}
@@ -242,7 +236,7 @@ export default function Navbar({ onNavigate, currentPath, onOpenBooking, isMenuO
               </button>
 
               <div className="flex items-center justify-between text-xs text-white/60 pt-1">
-                <span>Nanded, Maharashtra</span>
+                <span>{SITE.address.city}, {SITE.address.state}</span>
                 <div className="flex items-center gap-3">
                   <a
                     href={SITE.instagramUrl}

@@ -3,8 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, MessageCircle, ArrowRight } from 'lucide-react';
 import { PLANS } from '../data/plans';
 import { SITE } from '../data/site';
+import SampleBadge from './SampleBadge';
 
 export default function Pricing({ onOpenBooking, onPricingCtaInViewChange }) {
+  // If section flag is false, skip cleanly
+  if (SITE.sections?.showPackages === false) {
+    return null;
+  }
+
   // Mobile selected plan: Signature by default
   const [selectedMobilePlanId, setSelectedMobilePlanId] = useState('signature');
   const mobileCtaRef = useRef(null);
@@ -49,9 +55,12 @@ export default function Pricing({ onOpenBooking, onPricingCtaInViewChange }) {
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span className="text-xs uppercase tracking-[0.22em] font-semibold text-flash-yellow">
-            OUR PACKAGES
-          </span>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-xs uppercase tracking-[0.22em] font-semibold text-flash-yellow">
+              OUR PACKAGES
+            </span>
+            <SampleBadge light={true} />
+          </div>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-1">
             Packages for every story
           </h2>
@@ -249,7 +258,7 @@ export default function Pricing({ onOpenBooking, onPricingCtaInViewChange }) {
             {/* Custom package WhatsApp link */}
             <div className="text-center pt-1">
               <a
-                href={`https://wa.me/${SITE.whatsappNumber}?text=Hi%20LUMO%2C%20I'd%20like%20to%20discuss%20a%20custom%20photography%20package.`}
+                href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hi ${SITE.shortName}, I'd like to discuss a custom package.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-[14px] text-white/80 hover:text-flash-yellow transition-colors font-medium underline underline-offset-4"
@@ -264,7 +273,7 @@ export default function Pricing({ onOpenBooking, onPricingCtaInViewChange }) {
         {/* Custom Package Link for Desktop */}
         <div className="hidden lg:block mt-8 text-center">
           <a
-            href={`https://wa.me/${SITE.whatsappNumber}?text=Hi%20LUMO%2C%20I'd%20like%20to%20discuss%20a%20custom%20photography%20package.`}
+            href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hi ${SITE.shortName}, I'd like to discuss a custom package.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-flash-yellow transition-colors font-medium underline underline-offset-4"

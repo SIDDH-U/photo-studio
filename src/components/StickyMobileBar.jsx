@@ -39,7 +39,7 @@ export default function StickyMobileBar({
 
             {/* Round WhatsApp Chat Button */}
             <a
-              href={`https://wa.me/${SITE.whatsappNumber}?text=Hi%20LUMO%20Studio%2C%20I'd%20like%20to%20inquire%20about%20booking%20a%20shoot.`}
+              href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hi ${SITE.shortName}, I'd like to inquire about booking a shoot.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 rounded-full bg-ink text-white flex items-center justify-center shadow-md active:scale-95 transition-transform flex-shrink-0"

@@ -1,3 +1,12 @@
+function withOpacity(variableName) {
+  return ({ opacityValue }) => {
+    if (opacityValue !== undefined) {
+      return `rgb(var(${variableName}) / ${opacityValue})`;
+    }
+    return `rgb(var(${variableName}))`;
+  };
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -8,27 +17,27 @@ export default {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#0E0E10',
+          DEFAULT: withOpacity('--color-ink-rgb'),
           50: '#2A2A30',
           100: '#222226',
           200: '#1C1C20',
           300: '#161619',
           400: '#121215',
-          card: '#161619',
-          border: '#28282E',
+          card: withOpacity('--color-ink-card-rgb'),
+          border: withOpacity('--color-ink-border-rgb'),
         },
         warm: {
-          white: '#F6F1E9',
-          cream: '#EDE6DA',
-          card: '#FFFFFF',
-          border: '#E8E1D5',
-          muted: '#8C857B',
+          white: withOpacity('--color-bg-rgb'),
+          cream: withOpacity('--color-bg-soft-rgb'),
+          card: withOpacity('--color-card-rgb'),
+          border: withOpacity('--color-border-rgb'),
+          muted: withOpacity('--color-muted-rgb'),
           dark: '#3A3835',
         },
         flash: {
-          yellow: '#FFC531',
-          hover: '#E5B02B',
-          light: '#FFF4D6',
+          yellow: withOpacity('--color-cta-rgb'),
+          hover: withOpacity('--color-cta-hover-rgb'),
+          light: withOpacity('--color-cta-light-rgb'),
         }
       },
       fontFamily: {
